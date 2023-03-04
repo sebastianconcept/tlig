@@ -1,0 +1,74 @@
+version: "3"
+
+networks:
+  tlig:
+
+services:
+  loki:
+    image: grafana/loki:2.4.0
+    init: true
+    env_file:
+      - .env
+    volumes:
+      - ./conf/loki:/etc/loki:rw
+    ports:
+      - ${DOCKER_LOKI_PORT}:3100      
+    restart: unless-stopped
+    command: -config.file=/etc/loki/loki-config.yml
+    depends_on:
+      - promtail
+    networks:
+      - tlig
+  promtail:
+    image: grafana/promtail:2.4.0
+    init: true
+    env_file:
+      - .env
+    volumes:
+      - /var/log:/var/log:ro
+      - ./conf/promtail:/etc/promtail:rw
+    restart: unless-stopped
+    command: -config.file=/etc/promtail/promtail-config.yml
+    networks:
+      - tlig
+  influxdb:
+    image: influxdb:2.1.1
+    init: true
+    volumes:
+      - ./data/influxdb:/var/lib/influxdb2:rw
+    env_file:
+      - .env
+    entrypoint: ["./entrypoint.sh"]
+    restart: on-failure:10
+    ports:
+      - ${DOCKER_INFLUXDB_INIT_PORT}:8086
+    networks:
+      - tlig
+  telegraf:
+    image: telegraf:1.19
+    init: true
+    volumes:
+      - ${TELEGRAF_CFG_PATH}:/etc/telegraf/telegraf.conf:ro
+    env_file:
+      - .env
+    depends_on:
+      - influxdb
+    restart: unless-stopped
+    networks:
+      - tlig
+  grafana:
+    image: grafana/grafana-oss:8.4.3
+    init: true
+    user: ${USER_ID}
+    volumes:
+      - ./data/grafana:/var/lib/grafana:rw
+    env_file:
+      - .env
+    depends_on:
+      - telegraf
+      - loki
+    restart: unless-stopped
+    ports:
+      - ${GRAFANA_PORT}:3000
+    networks:
+      - tlig
