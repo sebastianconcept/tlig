@@ -1,11 +1,11 @@
 # tlig
-Telegraf Loki InfluxDB Grafana
+Telegraf Loki InfluxDB Grafana and Kuma
 
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE.txt)
 [![Release](https://img.shields.io/github/v/tag/sebastianconcept/tlig?label=release)](https://github.com/sebastianconcept/tlig/releases)
 
 ### Applicability
-Monitoring setup and GUI for operation performance monitoring using Grafana.
+Monitoring setup and GUI for operation performance monitoring using Grafana plus Kuma for availability and alerts.
 
 ### Features
 1. Promtail collects logs for Loki.
@@ -13,6 +13,7 @@ Monitoring setup and GUI for operation performance monitoring using Grafana.
 3. Telegraf collects periodic performance metrics that saves in InfluxDB.
 4. InfluxDB provides datasource and querying features to Grafana.
 5. Grafana provides datasource consumption and a nice GUI for you.
+6. Kuma provides availability and status checks, alerts and GUI.
 
 ### Start
 ```
@@ -24,7 +25,7 @@ docker-compose up -d --force-recreate
 docker-compose down
 ```
 ### First time setup
-1. Open Grafana GUI http://localhost:3008 and, since it's the first time, login using `admin` `admin` and later change to proper credentials.
+1. Open Grafana GUI `http://localhost:3008` and, since it's the first time, login using `admin` `admin` and later change to proper credentials.
 
 2. Go to `Add your first data source` and add Loki from the list.
     1. URL:  `http://loki:3100`.
@@ -37,3 +38,5 @@ docker-compose down
     5. `Save & test`.
 
 With that done, you should be able to create Dashboards and panels that consume InfluxDB and Loki datasources.
+
+Additionally, open Kuma GUI found at `http://localhost:3009` and configure all the healthchecks and alerts you need.
