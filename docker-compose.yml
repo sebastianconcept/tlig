@@ -72,3 +72,16 @@ services:
       - ${GRAFANA_PORT}:3000
     networks:
       - tlig
+  kuma:
+    image: louislam/uptime-kuma:1
+    init: true
+    container_name: kuma
+    env_file:
+      - .env
+    volumes:
+      - ./data/kuma:/app/data:rw
+    ports:
+      - ${KUMA_PORT}:3001
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
